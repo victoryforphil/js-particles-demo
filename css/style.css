@@ -17,6 +17,7 @@ body{
     font-family: ProductSansNormal;
     src: url("../fonts/Product Sans Regular.ttf");
 }
+
 .title-container {
     position: absolute;
     top: 40%;

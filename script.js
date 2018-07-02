@@ -5,13 +5,19 @@ var index = 0;
 var particles = [];
 
 
-
+var loaded = false;
 
 window.onload = window.onresize = function() {
   canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
   canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-  start();
-  setInterval(tick, 25);
+  if(!loaded){
+    start();
+    setInterval(tick, 25);
+    loaded = true;
+  }else{
+    particles = [];
+      start();
+  }
 }
 
 function start(){
@@ -24,7 +30,7 @@ function tick(){
 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.globalAlpha=0.5;
+    ctx.globalAlpha=0.4;
     for(var i=0;i<particles.length;i++){
         var _particle = particles[i];
         if(!_particle.dead){
@@ -32,8 +38,7 @@ function tick(){
             _particle.draw();
         }
     }
-    ctx.font = '48px HACKED';
-    ctx.fillText('Particles: ' + particles.length, 10, 50);
+
 
 }
 
@@ -96,7 +101,19 @@ function genParticle(){
                 ctx.beginPath();
                 ctx.moveTo(this.position.x, this.position.y);
                 ctx.lineTo(nearest.position.x, nearest.position.y);
-                ctx.strokeStyle=`rgba(200,200,200,${(nearest.distance / 200) * 0.5 - 0.05}`;
+                var _transmitRoll = getRandomArbitrary(0,1500);
+                if(_transmitRoll < 1 || nearest.transmit > 0){
+                  if(!nearest.transmit){
+                    nearest.transmit = 75;
+                  }else{
+                    nearest.transmit--;
+                  }
+                  ctx.strokeStyle=`rgba(50,100,255,${(nearest.distance / 200) * 0.8 }`;
+                  ctx.lineWidth=3;
+                }else {
+                  ctx.lineWidth=1;
+                  ctx.strokeStyle=`rgba(200,200,200,${(nearest.distance / 200) * 0.5 - 0.05}`;
+                }
                 ctx.stroke();
             }
 
