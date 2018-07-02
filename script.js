@@ -21,7 +21,7 @@ window.onload = window.onresize = function() {
 }
 
 function start(){
-    for(var i=0;i<200;i++){
+    for(var i=0;i<130;i++){
         genParticle();
     }
 }
