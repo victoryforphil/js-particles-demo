@@ -1,24 +1,30 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
-
-setInterval(tick, 25);
 var index = 0;
 var particles = [];
 
-start();
+
+
+
+window.onload = window.onresize = function() {
+  canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+  canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  start();
+  setInterval(tick, 25);
+}
 
 function start(){
     for(var i=0;i<200;i++){
-        
         genParticle();
     }
 }
 
 function tick(){
-    
-    
+
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha=0.5;
     for(var i=0;i<particles.length;i++){
         var _particle = particles[i];
         if(!_particle.dead){
@@ -26,13 +32,13 @@ function tick(){
             _particle.draw();
         }
     }
-    ctx.font = '48px serif';
+    ctx.font = '48px HACKED';
     ctx.fillText('Particles: ' + particles.length, 10, 50);
 
 }
 
 function genParticle(){
-    var randomSize = getRandomArbitrary(3, 5)
+    var randomSize = getRandomArbitrary(5, 10)
     var maxSpeed = 2;
 
     var newParticle = {
@@ -51,11 +57,11 @@ function genParticle(){
             y:randomSize
         },
         opacity:{
-            max: 0.8,
+            max: 0.75,
             current: 0
         },
         move:function(){
-           
+
             this.position.x += this.velocity.x;
             this.position.y += this.velocity.y;
 
@@ -64,12 +70,17 @@ function genParticle(){
                 particles.splice(getParticleIndexByID(this.id), 1);
                 genParticle();
             }
-            
+
+            if(this.opacity.current < this.opacity.max){
+              this.opacity.current += getRandomArbitrary(0.01, 0.2);
+            }
+
         },
         draw: function(){
+            ctx.fillStyle=`rgba(200,200,200,${this.opacity.current}`;
             ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y);
-            ctx.font = '12px serif';
-            ctx.fillText('ID: ' + this.id, this.position.x,  this.position.y);
+            ctx.font = '10px HACKED';
+            ctx.fillText('ID: ' + this.id + ` ${(this.position.x - this.position.y).toFixed(1)}`, this.position.x,  this.position.y - 2);
 
             /*
              var nearest = getNearestParticle(this);
@@ -85,10 +96,10 @@ function genParticle(){
                 ctx.beginPath();
                 ctx.moveTo(this.position.x, this.position.y);
                 ctx.lineTo(nearest.position.x, nearest.position.y);
-                ctx.strokeStyle=`rgba(0,0,0,${(nearest.distance / 200) * 0.5 - 0.05}`;
+                ctx.strokeStyle=`rgba(200,200,200,${(nearest.distance / 200) * 0.5 - 0.05}`;
                 ctx.stroke();
             }
-            
+
         }
     }
     particles.push(newParticle);
@@ -112,7 +123,7 @@ function getNearestParticle(particleA){
         var _distance = (Math.abs(_particleB.position.x - particleA.position.x) + Math.abs(_particleB.position.y - particleA.position.y))
         distances.push({
             distance: _distance,
-            particle:_particleB 
+            particle:_particleB
         });
     }
 
@@ -134,7 +145,7 @@ function getParticlesUnderDistance(particleA, maxDistance, maxResults = 4){
         if(_particleB.id == particleA.id){
             continue;
         }
-       
+
         var _distance = (Math.abs(_particleB.position.x - particleA.position.x) + Math.abs(_particleB.position.y - particleA.position.y))
         _particleB.distance = _distance;
         if(_distance < maxDistance && found.length < maxResults){
